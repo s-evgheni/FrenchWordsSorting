@@ -13,27 +13,57 @@ import java.util.Optional;
 
 public class Main {
 
-    private static final Locale TEST_LOCALE = Locale.CANADA_FRENCH;
-    private static final String CUSTOM_RULES = "< A,À,Á,Â,Ä,Æ,Ã,Å,Ā,a,à,á,â,ä,æ,ã,å,ā < B,b < C,Ç,Ć,Č,c,ç,ć,č " +
-                                        "< D,d < E,È,É,Ê,Ë,Ē,Ė,Ę,e,è,é,ê,ë,ē,ė,ę < F,f < G,g < H,h " +
-                                        "< I,Î,Ï,Í,Ī,Į,Ì,i,î,ï,í,ī,į,ì < J,j < K,k < L,Ł,l,ł < M,m " +
-                                        "< N,Ñ,Ń,n,ñ,ń < O,Ô,Ö,Ò,Ó,Œ,Ø,Ō,Õ,o,ô,ö,ò,ó,œ,ø,ō,õ < P,p < Q,q " +
-                                        "< R,r < S,Ś,Š,s,ś,š < T,t < U,Û,Ü,Ù,Ú,Ū,u,û,ü,ù,ú,ū < W,w " +
-                                        "< X,x < Y,Ÿ,y,ÿ < Z,Ž,Ź,Ż,z,ž,ź,ż";
+    private static final Locale TEST_LOCALE = Locale.FRENCH;
+    /*
+        Sorting rules:
+            1. Lowercase letters and capital letters are equal
+            2. Non accented letters come before accented letters and small letters come before capital letters.
+            3. Regarding the precedence of accents, the rule is:
+                    a comes before à, which comes before â
+                    e comes before é, which comes before è, which comes before ê, which comes before ë
+                    i comes before î, which comes before ï
+                    u comes before ù, which comes before û, which comes before ü
+            4. 'æ','Æ' and 'u0153', 'u0152' are considered as separate letters, i.e.'ae', 'AE' and 'oe', 'OE'
+            5. Numbers and symbols like @ sort before letters.
+     */
 
-    private static final List<String> words = Arrays.asList("Äbc", "äbc", "Àbc", "àbc", "Abc", "abc", "ABC", "BED",
-                                                            "ébárquér", "end", "zebra", "San","Mr. Antone Jorge",
-                                                            "ábrquér", "žebra", "Žebra", "žebrá", "Antone Jorge",
-                                                            "antone jorge", "Àntóné Jorge", "àntóné jorge", "Mr. Àntóné Jorge");
+    private static final String CUSTOM_RULES =  "< '@'='!'='#'='$'='%'='&'='*' " +
+                                                "< 0 < 1 < 2 < 3 < 4 < 5 < 6 < 7 < 8 < 9 " +
+                                                "< a,A ; à,À ; â,Â " +
+                                                "< æ,Æ < b,B < c,C ; ç,Ç < d,D " +
+                                                "< e,E ; é,É ; è,È ; ê,Ê ; ë,Ë < f,F < g,G " +
+                                                "< h,H < i,I; î,Î ; ï,Ï < j,J < k,K < l,L " +
+                                                "< m,M < n,N < o,O ; ô,Ô ; ö,Ö < \u0153,\u0152 < p,P " +
+                                                "< q,Q < r,R < s,S < t,T < u,U ; ù,Ù ; û,Û " +
+                                                "< v,V < w,W < x,X < y,Y ; ÿ,Ÿ < z,Z ";
+
+
+    private static final List<String> wordSet = Arrays.asList("1", "@", "aâà", "àaâ", "àâa", "âaà", "aàâ", "âàa",
+                                                            "Aàâ", "Aâà", "àAâ", "àâA", "âAà", "âàA", "æaA", "ÆaA");
+
+    private static final List<String> wordSet2 = Arrays.asList("@","1","Aaron", "àAron",
+                                                            "chaque","chemin","cote", "coté", "côte",
+                                                            "côté", "lie", "lire", "pint", "pylon", "savoir",
+                                                            "yen", "yuan","yucca", "zoo","Zürich");
 
     public static void main(String... aArguments) throws ParseException {
-        System.out.println(" --- Original Data --- \n" + words);
-        List<String> builtInSortResult = sortLocaleSensitiveList(words, TEST_LOCALE);
-        List<String> customSortResult = customSortLocaleSensitiveList(words, CUSTOM_RULES);
-        System.out.println("\n --- Built-In sorting results --- \n");
-        builtInSortResult.stream().forEach(word -> System.out.print(word + " "));
+        System.out.println("\n\n --- Original Data Set 1--- \n" );
+        wordSet.forEach(word -> System.out.print(word + " | "));
+        List<String> builtInSortResult = sortLocaleSensitiveList(wordSet, TEST_LOCALE);
+        List<String> customSortResult = customSortLocaleSensitiveList(wordSet, CUSTOM_RULES);
+        System.out.println("\n\n --- Built-In sorting results --- \n");
+        builtInSortResult.forEach(word -> System.out.print(word + " | "));
         System.out.println("\n\n --- Custom sorting results --- \n");
-        customSortResult.stream().forEach(word -> System.out.print(word + " "));
+        customSortResult.forEach(word -> System.out.print(word + " | "));
+
+        System.out.println("\n\n --- Original Data Set 2--- \n" );
+        wordSet2.forEach(word -> System.out.print(word + " | "));
+        builtInSortResult = sortLocaleSensitiveList(wordSet2, TEST_LOCALE);
+        customSortResult = customSortLocaleSensitiveList(wordSet2, CUSTOM_RULES);
+        System.out.println("\n\n --- Built-In sorting results --- \n");
+        builtInSortResult.forEach(word -> System.out.print(word + " | "));
+        System.out.println("\n\n --- Custom sorting results --- \n");
+        customSortResult.forEach(word -> System.out.print(word + " | "));
     }
 
     /**
