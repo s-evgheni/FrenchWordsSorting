@@ -28,10 +28,11 @@ public class Main {
             5. Numbers and symbols like @ sort before letters.
             6. The common French alphabetizing order including all extended character used
                 in the French language is as follows :
-                a, A, à, À, â, Â, æ, Æ, b, B, c, C, ç, Ç, d,
-                D, e, E, é, É, è, È, ê, Ê, ë, Ë, f, F, g, G, h, H, i, I, î, Î, ï, Ï, j, J, k, K, l, L, m, M, n, N,
-                o, O, ô, Ô, ö, Ö, œ, Œ, p, P, q, Q, r, R, s, S, t, T, u, U, ù, Ù, û, Û, v, V, w, W, x,
-                X, y, Y, ÿ, Ÿ, z, Z
+                a, A, à, À, â, Â, æ, Æ, b, B, c, C, ç, Ç, d,D,
+                e, E, é, É, è, È, ê, Ê, ë, Ë, f, F, g, G, h, H,
+                i, I, î, Î, ï, Ï, j, J, k, K, l, L, m, M, n, N,
+                o, O, ô, Ô, ö, Ö, œ, Œ, p, P, q, Q, r, R, s, S,
+                t, T, u, U, ù, Ù, û, Û, v, V, w, W, x, X, y, Y, ÿ, Ÿ, z, Z
      */
 
     private static final String CUSTOM_RULES =  "< '@'='!'='#'='$'='%'='&'='*' " +
@@ -65,48 +66,24 @@ public class Main {
                                                                "yen", "yuan","yucca", "zoo","Zürich");
 
     public static void main(String... aArguments) throws ParseException {
-        System.out.println("\n\n --- Human Sorted Data Set 1 --- \n" );
-        sortedWordSet.forEach(word -> System.out.print(word + " | "));
-        System.out.println("\n Data Set to sort:" );
+        printResultsToConsole("\n\nHuman Sorted Data Set 1:", sortedWordSet);
         Collections.shuffle(sortedWordSet);
-        sortedWordSet.forEach(word -> System.out.print(word + " | "));
+        printResultsToConsole("\nData Set to sort:", sortedWordSet);
+        printResultsToConsole("\n\nCustom sorting rules results:", customSortLocaleSensitiveList(sortedWordSet, CUSTOM_RULES));
+        printResultsToConsole("\n\nJava Built-In sorting rules results:", sortLocaleSensitiveList(sortedWordSet, TEST_LOCALE));
 
-        List<String> customSortResult = customSortLocaleSensitiveList(sortedWordSet, CUSTOM_RULES);
-        System.out.println("\n\n --- Custom sorting rules results --- \n");
-        customSortResult.forEach(word -> System.out.print(word + " | "));
 
-        List<String> builtInSortResult = sortLocaleSensitiveList(sortedWordSet, TEST_LOCALE);
-        System.out.println("\n\n --- Java Built-In sorting rules results --- \n");
-        builtInSortResult.forEach(word -> System.out.print(word + " | "));
-
-        System.out.println("\n\n --- Human Sorted Data Set 2 --- \n" );
-        sortedWordSet2.forEach(word -> System.out.print(word + " | "));
-        System.out.println("\n Data Set to sort:" );
+        printResultsToConsole("\n\nHuman Sorted Data Set 2:", sortedWordSet2);
         Collections.shuffle(sortedWordSet2);
-        sortedWordSet2.forEach(word -> System.out.print(word + " | "));
+        printResultsToConsole("\nData Set to sort:", sortedWordSet2);
+        printResultsToConsole("\n\nCustom sorting rules results:", customSortLocaleSensitiveList(sortedWordSet2, CUSTOM_RULES));
+        printResultsToConsole("\n\nJava Built-In sorting rules results:", sortLocaleSensitiveList(sortedWordSet2, TEST_LOCALE));
 
-        customSortResult = customSortLocaleSensitiveList(sortedWordSet2, CUSTOM_RULES);
-        System.out.println("\n\n --- Custom sorting results --- \n");
-        customSortResult.forEach(word -> System.out.print(word + " | "));
-
-        builtInSortResult = sortLocaleSensitiveList(sortedWordSet2, TEST_LOCALE);
-        System.out.println("\n\n --- Java Built-In sorting results --- \n");
-        builtInSortResult.forEach(word -> System.out.print(word + " | "));
-
-        System.out.println("\n\n --- Human sorted Data Set 3 --- \n" );
-        alphabetInOrder.forEach(word -> System.out.print(word + " | "));
-        System.out.println("\n Data Set to sort:" );
+        printResultsToConsole("\n\nHuman Sorted Data Set 3:", alphabetInOrder);
         Collections.shuffle(alphabetInOrder);
-        alphabetInOrder.forEach(word -> System.out.print(word + " | "));
-
-        customSortResult = customSortLocaleSensitiveList(alphabetInOrder, CUSTOM_RULES);
-        System.out.println("\n\n --- Custom sorting results --- \n");
-        customSortResult.forEach(word -> System.out.print(word + " | "));
-
-        builtInSortResult = sortLocaleSensitiveList(alphabetInOrder, TEST_LOCALE);
-        System.out.println("\n\n --- Java Built-In sorting results --- \n");
-        builtInSortResult.forEach(word -> System.out.print(word + " | "));
-
+        printResultsToConsole("\nData Set to sort:", alphabetInOrder);
+        printResultsToConsole("\n\nCustom sorting rules results:", customSortLocaleSensitiveList(alphabetInOrder, CUSTOM_RULES));
+        printResultsToConsole("\n\nJava Built-In sorting rules results:", sortLocaleSensitiveList(alphabetInOrder, TEST_LOCALE));
     }
 
     /**
@@ -121,7 +98,7 @@ public class Main {
     public static int compareLocaleSensitiveWords(String source, String target, Locale locale) {
         Optional<Integer> blankValueComparisonResult = compareBlankStrings(source, target);
         Collator collator = locale != null ? Collator.getInstance(locale): Collator.getInstance();
-        collator.setStrength(Collator.TERTIARY);
+        collator.setStrength(Collator.SECONDARY);
         return blankValueComparisonResult.orElseGet(() -> collator.compare(source, target));
     }
 
@@ -230,5 +207,10 @@ public class Main {
             return Optional.of(1);
 
         return Optional.empty();
+    }
+
+    private static void printResultsToConsole(String textHeader, List<String> listToPrint) {
+        System.out.println(textHeader);
+        listToPrint.forEach(word -> System.out.print(word + " | "));
     }
 }
